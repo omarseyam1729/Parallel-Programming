@@ -19,7 +19,7 @@
 #define FIO ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 #define TEST freopen("1.txt","r",stdin);
 using namespace std;
-int N=10;
+int N=100;
 int main(int argc, char* argv[])
 {
     MPI_Init(&argc, &argv); 
@@ -33,13 +33,19 @@ int main(int argc, char* argv[])
 			MPI_Recv(&temp, 1, MPI_INT,i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 			sum+=temp;
 		}
-		for(int i=0;i<N/size;i++){sum+=i;}
+		for(int i=0;i<=N/size;i++){sum+=i;}
 		cout<<sum;
+	}
+	else if(rank!=size-1){
+		int start=rank*(N/size);
+		int sum=0;
+		for(int i=start+1;i<=start+N/size;i++){sum+=i;}
+		MPI_Send(&sum,1, MPI_INT, 0, 0, MPI_COMM_WORLD);
 	}
 	else{
 		int start=rank*(N/size);
 		int sum=0;
-		for(int i=start;i<start+N/size;i++){sum+=i;}
+		for(int i=start+1;i<=N;i++){sum+=i;}
 		MPI_Send(&sum,1, MPI_INT, 0, 0, MPI_COMM_WORLD);
 	}
     MPI_Finalize(); 
